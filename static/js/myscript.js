@@ -51,34 +51,27 @@ function initMap() {
     });
     markers.push(marker);
     bounds.extend(marker.position); //Extends the bounds
-    marker.addListener('click', function() {
-      populateInfoWindow(this, infoWindows);
-    });
-    marker.addListener('mouseover', function(){
-      this.setIcon(highIcon);
-      this.setAnimation(google.maps.Animation.BOUNCE);
-    });
-    marker.addListener('mouseout', function(){
-      this.setIcon(icon);
-      this.setAnimation(null);
-    });
+    marker.addListener('click', populateInfoWindow(this, infoWindows));
+    marker.addListener('mouseover', overAnimation());
+    marker.addListener('mouseout', outAnimation());
   }
 }
-
+// mouseover and out animations
+function overAnimation(){
+  this.setIcon(highIcon);
+  this.setAnimation(google.maps.Animation.BOUNCE);
+}
+function outAnimation(){
+  this.setIcon(icon);
+  this.setAnimation(null);
+}
 //InfoWindow Content is in this function
  function populateInfoWindow(marker, infowindow){
    if(infowindow.marker != marker)
    {
      wikiElem = wikiInfo(marker);
      infowindow.marker = marker;
-     infowindow.setContent('<div>'
-                           +'<h3 style="color:blue;">'
-                           + marker.title
-                           +'</h3>'
-                           + '<br>'
-                           + marker.customInfo
-                           + '<ul id="wiki-container">'+ wikiElem +'</ul>'
-                           + '</div>');
+     infowindow.setContent('<div>'+'<h3 style="color:blue;">'+ marker.title +'</h3>'+ '<br>' + marker.customInfo+ '<ul id="wiki-container">'+ wikiElem +'</ul>'+ '</div>');
      infowindow.open(map, marker);
      infowindow.addListener('closeclick',function(){
      infowindow.setMarker = null;
@@ -127,7 +120,7 @@ var ViewModel = function(){
   this.zoomToArea = function() {
       var geocoder = new google.maps.Geocoder();
       var address = document.getElementById('area-text').value;
-      if (address == '') {
+      if (address === '') {
         window.alert('You must enter an area, or address.');
       } else {
         geocoder.geocode(
@@ -144,7 +137,7 @@ var ViewModel = function(){
           });
       }
   };
-}
+};
 ko.applyBindings(new ViewModel());
 
 // load wikipedia data
@@ -166,9 +159,9 @@ function wikiInfo(marker){
               var articleStr = articleList[i];
               var url = 'http://en.wikipedia.org/wiki/' + articleStr;
               wikiElem+='<li><a href="' + url + '">' + articleStr + '</a></li>';
-          };
+          }
           $('#wiki-container').html(wikiElem);
           clearTimeout(wikiRequestTimeout);
-      }
+      };
   });
-}
+};
