@@ -22,7 +22,7 @@ function initMap() {
     origin: new google.maps.Point(0,0), // origin
     anchor: new google.maps.Point(0, 0) // ancho
   };
-  var hicon =  {
+  var highIcon =  {
     url:"http://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Marker-Outside-Pink-icon.png",
     scaledSize: new google.maps.Size(50, 50), // scaled size
     origin: new google.maps.Point(0,0), // origin
@@ -46,7 +46,8 @@ function initMap() {
       title: title,
       icon: icon,
       animation: google.maps.Animation.DROP,
-      customInfo: info
+      customInfo: info,
+      optimized: false
     });
     markers.push(marker);
     bounds.extend(marker.position); //Extends the bounds
@@ -54,7 +55,7 @@ function initMap() {
       populateInfoWindow(this, infoWindows);
     });
     marker.addListener('mouseover', function(){
-      this.setIcon(hicon);
+      this.setIcon(highIcon);
       this.setAnimation(google.maps.Animation.BOUNCE);
     });
     marker.addListener('mouseout', function(){
