@@ -51,20 +51,20 @@ function initMap() {
     });
     markers.push(marker);
     bounds.extend(marker.position); //Extends the bounds
-    marker.addListener('click', populateInfoWindow(this, infoWindows));
-    marker.addListener('mouseover', overAnimation());
-    marker.addListener('mouseout', outAnimation());
+    marker.addListener('click', function() {
+      populateInfoWindow(this, infoWindows);
+    });
+    marker.addListener('mouseover', function(){
+      this.setIcon(highIcon);
+      this.setAnimation(google.maps.Animation.BOUNCE);
+    });
+    marker.addListener('mouseout', function(){
+      this.setIcon(icon);
+      this.setAnimation(null);
+    });
   }
 }
-// mouseover and out animations
-function overAnimation(){
-  this.setIcon(highIcon);
-  this.setAnimation(google.maps.Animation.BOUNCE);
-}
-function outAnimation(){
-  this.setIcon(icon);
-  this.setAnimation(null);
-}
+
 //InfoWindow Content is in this function
  function populateInfoWindow(marker, infowindow){
    if(infowindow.marker != marker)
@@ -162,6 +162,6 @@ function wikiInfo(marker){
           }
           $('#wiki-container').html(wikiElem);
           clearTimeout(wikiRequestTimeout);
-      };
+      }
   });
 };
