@@ -63,29 +63,30 @@ function initMap() {
       this.setAnimation(null);
     });
   }
+}
 
- //InfoWindow Content is in this function
-  function populateInfoWindow(marker, infowindow){
-    if(infowindow.marker != marker)
-    {
-      wikiElem = wikiInfo(marker);
-      infowindow.marker = marker;
-      infowindow.setContent('<div>'
-                            +'<h3 style="color:blue;">'
-                            + marker.title
-                            +'</h3>'
-                            + '<br>'
-                            + marker.customInfo
-                            + '<ul id="wiki-container">'+ wikiElem +'</ul>'
-                            + '</div>');
-      infowindow.open(map, marker);
-      infowindow.addListener('closeclick',function(){
-      infowindow.setMarker = null;
-    });
-  }
+//InfoWindow Content is in this function
+ function populateInfoWindow(marker, infowindow){
+   if(infowindow.marker != marker)
+   {
+     wikiElem = wikiInfo(marker);
+     infowindow.marker = marker;
+     infowindow.setContent('<div>'
+                           +'<h3 style="color:blue;">'
+                           + marker.title
+                           +'</h3>'
+                           + '<br>'
+                           + marker.customInfo
+                           + '<ul id="wiki-container">'+ wikiElem +'</ul>'
+                           + '</div>');
+     infowindow.open(map, marker);
+     infowindow.addListener('closeclick',function(){
+     infowindow.setMarker = null;
+   });
  }
 }
 
+//search marker
 function search(choice){
   for (var i = 0; i < markers.length; i++) {
     if(i == choice)
@@ -105,6 +106,7 @@ var ViewModel = function(){
     var choice = s.selectedIndex;
     markerSelected = search(choice);
     markerSelected.setAnimation(google.maps.Animation.BOUNCE);
+    var infoWindows=new google.maps.InfoWindow();
     populateInfoWindow(markerSelected, infoWindows);
   };
 
