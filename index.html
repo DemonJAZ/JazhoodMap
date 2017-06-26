@@ -34,6 +34,13 @@
             </select>
             <input type="button" value="Spot" data-bind="click: spotMarker">
           </div>
+          <div data-bind="html: wikiArticle"></div>
+          <ul data-bind="foreach: wikiLinks">
+            <li>
+             <!-- <a data-bind="attr: { href: $data}">link</a>-->
+             <a data-bind="attr: { href: url}, text: articleStr"></a>
+            </li>
+          </ul>
         </div>
         <!---Map--->
         <div class="col-lg-8">

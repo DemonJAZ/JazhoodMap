@@ -69,14 +69,15 @@ function initMap() {
  function populateInfoWindow(marker, infowindow){
    if(infowindow.marker != marker)
    {
-     wikiElem = wikiInfo(marker);
+     wikiInfo(marker);
      infowindow.marker = marker;
-     infowindow.setContent('<div>'+'<h3 style="color:blue;">'+ marker.title +'</h3>'+ '<br>' + marker.customInfo+ '<ul id="wiki-container">'+ wikiElem +'</ul>'+ '</div>');
+     infowindow.setContent('<div>'+'<h3 style="color:blue;">'+ marker.title +'</h3>'+ '<br>' + marker.customInfo+ '<ul id="wiki-container">'+'</ul>'+ '</div>');
      infowindow.open(map, marker);
      infowindow.addListener('closeclick',function(){
      infowindow.setMarker = null;
    });
  }
+ vm.wikiLinks.removeAll();
 }
 
 //search marker
@@ -102,6 +103,9 @@ var ViewModel = function(){
     var infoWindows=new google.maps.InfoWindow();
     populateInfoWindow(markerSelected, infoWindows);
   };
+
+  this.wikiArticle = ko.observable("");
+  this.wikiLinks = ko.observableArray();
 
   this.showMarkers = function() {
     var bounds = new google.maps.LatLngBounds();
@@ -138,7 +142,10 @@ var ViewModel = function(){
       }
   };
 };
-ko.applyBindings(new ViewModel());
+
+var vm = new ViewModel();
+
+ko.applyBindings(vm);
 
 // load wikipedia data
 function wikiInfo(marker){
@@ -154,13 +161,21 @@ function wikiInfo(marker){
       dataType: "jsonp",
       jsonp: "callback",
       success: function( response ) {
+        console.log(response);
+        vm.wikiArticle(response[2][2]);
           var articleList = response[1];
           for (var i = 0; i < articleList.length; i++) {
               var articleStr = articleList[i];
               var url = 'http://en.wikipedia.org/wiki/' + articleStr;
-              wikiElem+='<li><a href="' + url + '">' + articleStr + '</a></li>';
+              var article = {
+                url: url,
+                articleStr: articleStr
+              }
+            //  vm.wikiLinks.push(url);
+              vm.wikiLinks.push(article);
+
           }
-          $('#wiki-container').html(wikiElem);
+
           clearTimeout(wikiRequestTimeout);
       }
   });
