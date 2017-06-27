@@ -66,14 +66,12 @@ function initMap() {
   function mouseOverFunc(marker){
     marker.addListener('mouseover', function(){
       this.setIcon(highIcon);
-      this.setAnimation(google.maps.Animation.BOUNCE);
     });
   }
 
   function mouseOutFunc(marker){
     marker.addListener('mouseout', function(){
       this.setIcon(icon);
-      this.setAnimation(null);
     });
   }
 }
@@ -93,6 +91,7 @@ function mapError(){
      infowindow.open(map, marker);
      infowindow.addListener('closeclick',function(){
      infowindow.setMarker = null;
+     marker.setAnimation(null);
      vm.wikiLinks.removeAll(); //To Clear List when close os pressed
     });
    }
@@ -101,7 +100,7 @@ function mapError(){
 //search marker
 function search(choice){
   for (var i = 0; i < markers.length; i++) {
-    if(i == choice)
+    if(markers[i].title == choice)
     {
       return markers[i];
     }
@@ -112,18 +111,17 @@ function search(choice){
 //Model for knockout
 var ViewModel = function(){
   this.loc = ko.observableArray(locations.slice(0));
+  this.wikiArticle = ko.observable("");
+  this.wikiLinks = ko.observableArray();
+  this.spotchoosed = ko.observableArray();
   this.spotMarker = function() {
-    var s = document.getElementById('spot-choosed');
-    var choice = s.selectedIndex
-    markerSelected = search(choice);
+    var choice = vm.spotchoosed()[0];
+    markerSelected = search(choice.title);
     markerSelected.setAnimation(google.maps.Animation.BOUNCE);
     var infoWindows=new google.maps.InfoWindow();
     populateInfoWindow(markerSelected, infoWindows);
   };
 
-  this.wikiArticle = ko.observable("");
-  this.wikiLinks = ko.observableArray();
-  this.areaText = ko.observable();
   this.showMarkers = function() {
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < markers.length; i++) {
@@ -138,9 +136,11 @@ var ViewModel = function(){
     }
   };
 
+  this.area = ko.observable("");
   this.zoomToArea = function() {
       var geocoder = new google.maps.Geocoder();
-      var address = document.getElementById('area-text').value;
+      var address = vm.area();
+      console.log(vm.area());
       if (address === '') {
         window.alert('You must enter an area, or address.');
       } else {

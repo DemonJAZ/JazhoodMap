@@ -24,14 +24,12 @@
             <br>
             <hr>
             <h2>Locate Neighborhood</h2>
-            <input type="text" data-bind:"textInput: areaText" id="area-text" placeholder="Enter a location to see">
+            <input type="text" data-bind="value: area , valueUpdate: 'input'" placeholder="Enter a location to see">
             <input type="button" value="Filter" data-bind="click: zoomToArea">
             <hr>
             <br>
             <h2>Filter Spots</h2>
-            <select data-bind="foreach: loc" id="spot-choosed">
-              <option data-bind="attr: {label: title}"></option>
-            </select>
+            <select data-bind="selectedOptions: spotchoosed , options: loc, optionsText: 'title'"></select>
             <input type="button" value="Spot" data-bind="click: spotMarker">
           </div>
           <div>
@@ -44,6 +42,8 @@
                 </li>
               </script>
           </div>
+          <br>
+          <h2>Wiki Links:</h2>
           <div data-bind="html: wikiArticle"></div>
           <ul data-bind="foreach: wikiLinks">
             <li>
