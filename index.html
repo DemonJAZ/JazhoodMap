@@ -14,7 +14,7 @@
           <h2>Welcome to JazHood</h2>
         </div>
       </div>
-      <div class="row">
+      <header class="row">
         <!--Utilities-->
         <div class="col-lg-4">
           <div>
@@ -24,15 +24,25 @@
             <br>
             <hr>
             <h2>Locate Neighborhood</h2>
-            <input type="text" id="area-text" placeholder="Enter a location to see">
+            <input type="text" data-bind:"textInput: areaText" id="area-text" placeholder="Enter a location to see">
             <input type="button" value="Filter" data-bind="click: zoomToArea">
             <hr>
             <br>
             <h2>Filter Spots</h2>
             <select data-bind="foreach: loc" id="spot-choosed">
-              <option data-bind="text: title"></option>
+              <option data-bind="attr: {label: title}"></option>
             </select>
             <input type="button" value="Spot" data-bind="click: spotMarker">
+          </div>
+          <div>
+            <br>
+            <input placeholder="Search…" type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off">
+            <ul data-bind="template: {name:'locs', foreach:loc}"></ul>
+              <script type="text/html" id="locs">
+                <li>
+                  <strong data-bind="text: title"></strong>
+                </li>
+              </script>
           </div>
           <div data-bind="html: wikiArticle"></div>
           <ul data-bind="foreach: wikiLinks">
@@ -42,21 +52,18 @@
             </li>
           </ul>
         </div>
-        <!---Map--->
+        <!--Map-->
         <div class="col-lg-8">
-          <div class="img-responsive" marginheight="0" marginwidth="0" id="map">
+          <div class="img-responsive" id="map">
           </div>
         </div>
       </div>
-    </div>
-
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3dLiurPOj4oCBggcNjNCiXi9KioNwwrw&v=3&callback=initMap">
-    </script>
+    </header>
     <script src="static/js/knockout-3.4.2.js"></script>
     <script src="static/js/myscript.js"></script>
-    <script src="static/js/jquery.min.js">
-
+    <script src="static/js/jquery.min.js"></script>
+    <script async defer onerror="mapError()"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3dLiurPOj4oCBggcNjNCiXi9KioNwwrw&v=3&callback=initMap">
     </script>
   </body>
 </html>

@@ -5,7 +5,7 @@ var markers = [];
 var locations = [
   { title: 'Doon International School', position: {lat: 30.689363, lng:76.721244},
     info: 'Doon International School, established in 1993, today teaches over 5000 students from its three campuses at Mohali and Dehradun. Keen and active minds are encouraged to think, analyse, create and express, preparing good citizens and leaders for tomorrow.'},
-  { title: 'Subway', position: {lat: 30.684673, lng:76.721315},
+  { title: 'Subway(restaurant)', position: {lat: 30.684673, lng:76.721315},
     info: 'Subway is a privately held American fast food restaurant franchise that primarily sells submarine sandwiches (subs) and salads.' },
   { title: 'Army Law College', position: {lat: 30.686335, lng: 76.720674},
     info: 'The Army Institute of Law (AIL) was established in July 1999 by the Indian Army under the aegis of the Army Welfare Education Society (AWES) at its interim location at Patiala. In July 2003, the Institute shifted to Sector 68, Mohali. On December 1, 2003, the Mohali Campus was inaugurated by H.E. Dr. APJ Abdul Kalam, the then President of India.' },
@@ -59,6 +59,7 @@ function initMap() {
   function populateFunction(marker, infoWindows){
     marker.addListener('click', function() {
       populateInfoWindow(this, infoWindows);
+      this.setAnimation(google.maps.Animation.BOUNCE);
     });
   }
 
@@ -75,6 +76,9 @@ function initMap() {
       this.setAnimation(null);
     });
   }
+}
+function mapError(){
+  alert("Google Map API Link Error");
 }
 
 
@@ -107,11 +111,10 @@ function search(choice){
 
 //Model for knockout
 var ViewModel = function(){
-  this.loc = ko.observableArray(locations);
-
+  this.loc = ko.observableArray(locations.slice(0));
   this.spotMarker = function() {
     var s = document.getElementById('spot-choosed');
-    var choice = s.selectedIndex;
+    var choice = s.selectedIndex
     markerSelected = search(choice);
     markerSelected.setAnimation(google.maps.Animation.BOUNCE);
     var infoWindows=new google.maps.InfoWindow();
@@ -120,7 +123,7 @@ var ViewModel = function(){
 
   this.wikiArticle = ko.observable("");
   this.wikiLinks = ko.observableArray();
-
+  this.areaText = ko.observable();
   this.showMarkers = function() {
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < markers.length; i++) {
@@ -155,41 +158,55 @@ var ViewModel = function(){
           });
       }
   };
+  this.query = ko.observable('');
+  this.search = function(value){
+    var list = locations;
+    vm.loc.removeAll();
+    for(var x in list){
+      if(list[x].title.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
+        vm.loc.push(list[x]);
+    }
+   }
+ };
 };
-
 var vm = new ViewModel();
-
 ko.applyBindings(vm);
-
+vm.query.subscribe(vm.search);
 // load wikipedia data
 function wikiInfo(marker){
   var wikiElem;
   var name = marker.title.replace(/ /g,'_');
   var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='+ name +'&format=json&callback=wikiCallback';
-  var wikiRequestTimeout = setTimeout(function(){
-      return 'failed to get wikipedia resources';
-  }, 8000);
 
   $.ajax({
       url: wikiUrl,
       dataType: "jsonp",
       jsonp: "callback",
       success: function( response ) {
-        console.log(response);
         vm.wikiArticle(response[2][2]);
           var articleList = response[1];
-          for (var i = 0; i < articleList.length; i++) {
-              var articleStr = articleList[i];
-              var url = 'http://en.wikipedia.org/wiki/' + articleStr;
-              var article = {
-                url: url,
-                articleStr: articleStr
-              };
-            //  vm.wikiLinks.push(url);
-              vm.wikiLinks.push(article);
+          if(articleList.length == 0)
+          {
+            var article = {
+              url: "#",
+              articleStr: "No Wikipedia Links Found"
+            };
+            vm.wikiLinks.push(article);
           }
-
-          clearTimeout(wikiRequestTimeout);
-      }
+          else{
+            for (var i = 0; i < articleList.length; i++) {
+                var articleStr = articleList[i];
+                var url = 'http://en.wikipedia.org/wiki/' + articleStr;
+                var article = {
+                  url: url,
+                  articleStr: articleStr
+                };
+                //  vm.wikiLinks.push(url);
+                vm.wikiLinks.push(article);
+              }
+            }
+          }
+  }).fail(function (jqXHR, textStatus){
+    alert("Wiki Map API Error");
   });
 }
