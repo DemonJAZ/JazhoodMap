@@ -167,7 +167,7 @@ function wikiInfo(marker){
   var name = marker.title.replace(/ /g,'_');
   var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='+ name +'&format=json&callback=wikiCallback';
   var wikiRequestTimeout = setTimeout(function(){
-      return 'failed to get wikipedia resources'
+      return 'failed to get wikipedia resources';
   }, 8000);
 
   $.ajax({
@@ -184,7 +184,7 @@ function wikiInfo(marker){
               var article = {
                 url: url,
                 articleStr: articleStr
-              }
+              };
             //  vm.wikiLinks.push(url);
               vm.wikiLinks.push(article);
           }
@@ -192,4 +192,4 @@ function wikiInfo(marker){
           clearTimeout(wikiRequestTimeout);
       }
   });
-};
+}
