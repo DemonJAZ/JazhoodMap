@@ -185,9 +185,10 @@ function wikiInfo(marker){
       success: function( response ) {
         vm.wikiArticle(response[2][2]);
           var articleList = response[1];
-          if(articleList.length == 0)
+          var article;
+          if(articleList.length === 0)
           {
-            var article = {
+            article = {
               url: "#",
               articleStr: "No Wikipedia Links Found"
             };
@@ -197,7 +198,7 @@ function wikiInfo(marker){
             for (var i = 0; i < articleList.length; i++) {
                 var articleStr = articleList[i];
                 var url = 'http://en.wikipedia.org/wiki/' + articleStr;
-                var article = {
+                article = {
                   url: url,
                   articleStr: articleStr
                 };
