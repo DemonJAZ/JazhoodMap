@@ -35,6 +35,7 @@ function initMap() {
   });
  //Markers
   var infoWindows = new google.maps.InfoWindow();
+
   var bounds = new google.maps.LatLngBounds(); // Declaring bounds
   for (var i = 0; i < locations.length; i++) {
     var position = locations[i].position;
@@ -51,19 +52,32 @@ function initMap() {
     });
     markers.push(marker);
     bounds.extend(marker.position); //Extends the bounds
+    populateFunction(marker, infoWindows);
+    mouseOverFunc(marker);
+    mouseOutFunc(marker);
+  }
+  function populateFunction(marker, infoWindows){
     marker.addListener('click', function() {
       populateInfoWindow(this, infoWindows);
     });
+  }
+
+  function mouseOverFunc(marker){
     marker.addListener('mouseover', function(){
       this.setIcon(highIcon);
       this.setAnimation(google.maps.Animation.BOUNCE);
     });
+  }
+
+  function mouseOutFunc(marker){
     marker.addListener('mouseout', function(){
       this.setIcon(icon);
       this.setAnimation(null);
     });
   }
 }
+
+
 
 //InfoWindow Content is in this function
  function populateInfoWindow(marker, infowindow){
@@ -75,9 +89,9 @@ function initMap() {
      infowindow.open(map, marker);
      infowindow.addListener('closeclick',function(){
      infowindow.setMarker = null;
-   });
- }
- vm.wikiLinks.removeAll();
+     vm.wikiLinks.removeAll(); //To Clear List when close os pressed
+    });
+   }
 }
 
 //search marker
@@ -173,7 +187,6 @@ function wikiInfo(marker){
               }
             //  vm.wikiLinks.push(url);
               vm.wikiLinks.push(article);
-
           }
 
           clearTimeout(wikiRequestTimeout);
