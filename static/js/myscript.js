@@ -118,6 +118,7 @@ var ViewModel = function(){
   this.spotchoosed = ko.observableArray();
 
   this.spotMarker = function() {
+    vm.wikiLinks.removeAll();
     var choice = vm.spotchoosed()[0];
     if(typeof choice == 'undefined')
     {
