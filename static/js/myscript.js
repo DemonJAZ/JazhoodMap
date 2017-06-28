@@ -58,8 +58,10 @@ function initMap() {
   }
   function populateFunction(marker, infoWindows){
     marker.addListener('click', function() {
+      vm.wikiLinks.removeAll();
       populateInfoWindow(this, infoWindows);
       this.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(this.setAnimation(null), 700);
     });
   }
 
@@ -90,8 +92,8 @@ function mapError(){
      infowindow.setContent('<div>'+'<h3 style="color:blue;">'+ marker.title +'</h3>'+ '<br>' + marker.customInfo+ '<ul id="wiki-container">'+'</ul>'+ '</div>');
      infowindow.open(map, marker);
      infowindow.addListener('closeclick',function(){
-     infowindow.setMarker = null;
      marker.setAnimation(null);
+     vm.showMarkers(); //to show back markers
      vm.wikiLinks.removeAll(); //To Clear List when close os pressed
     });
    }
@@ -114,12 +116,21 @@ var ViewModel = function(){
   this.wikiArticle = ko.observable("");
   this.wikiLinks = ko.observableArray();
   this.spotchoosed = ko.observableArray();
+
   this.spotMarker = function() {
     var choice = vm.spotchoosed()[0];
-    markerSelected = search(choice.title);
-    markerSelected.setAnimation(google.maps.Animation.BOUNCE);
-    var infoWindows=new google.maps.InfoWindow();
-    populateInfoWindow(markerSelected, infoWindows);
+    if(typeof choice == 'undefined')
+    {
+      alert("Choose A location from Dropdown Please");
+    }
+    else{
+      filterHideMarkers();
+      markerSelected = search(choice.title);
+      markerSelected.setAnimation(google.maps.Animation.BOUNCE);
+      markerSelected.setMap(map);
+      var infoWindows=new google.maps.InfoWindow();
+      populateInfoWindow(markerSelected, infoWindows);
+    }
   };
 
   this.showMarkers = function() {
@@ -158,20 +169,31 @@ var ViewModel = function(){
           });
       }
   };
+  //Filter And Hide Markers
   this.query = ko.observable('');
   this.search = function(value){
+    filterHideMarkers();
     var list = locations;
     vm.loc.removeAll();
     for(var x in list){
       if(list[x].title.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
         vm.loc.push(list[x]);
+        markerDisplay=search(list[x].title);
+        markerDisplay.setMap(map);
+      }
     }
-   }
  };
+
 };
 var vm = new ViewModel();
 ko.applyBindings(vm);
 vm.query.subscribe(vm.search);
+
+function filterHideMarkers() {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(null);
+  }
+}
 // load wikipedia data
 function wikiInfo(marker){
   var wikiElem;
@@ -206,8 +228,10 @@ function wikiInfo(marker){
                 vm.wikiLinks.push(article);
               }
             }
-          }
-  }).fail(function (jqXHR, textStatus){
-    alert("Wiki Map API Error");
+        },
+      error: function (xhr , textStatus ,errorThrowm) {
+        alert("Wiki API Error"+"Error:" + textStatus + "Error:" + errorThrowm);
+        alert();
+      }
   });
 }
