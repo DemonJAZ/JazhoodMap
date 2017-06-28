@@ -232,7 +232,6 @@ function wikiInfo(marker){
         },
       error: function (xhr , textStatus ,errorThrowm) {
         alert("Wiki API Error"+"Error:" + textStatus + "Error:" + errorThrowm);
-        alert();
       }
   });
 }
